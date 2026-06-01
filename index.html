@@ -570,7 +570,7 @@ function renderNameList(){
   filtered.forEach((item,i)=>{
     const div=document.createElement('div');
     div.style.cssText='padding:0.65rem 0;font-size:0.9rem;font-weight:700;color:var(--text);'+(i<filtered.length-1?'border-bottom:1px solid var(--border)':'');
-    div.textContent=item.name+(item.furigana?' （'+item.furigana+'）':'');
+    div.textContent=item.name;
     frag.appendChild(div);
   });
   container.innerHTML='';
@@ -794,7 +794,7 @@ async function renderAdminList(){
     const counts={};(gifts||[]).forEach(g=>{counts[g.listener_name]=(counts[g.listener_name]||0)+1;});
     container.innerHTML=listeners.map(l=>`
       <div class="row">
-        <div class="row-info"><div class="row-name">${l.name}</div><div class="row-sub">ギフト ${counts[l.name]||0}件${l.furigana?' / 読み: '+l.furigana:''}</div></div>
+        <div class="row-info"><div class="row-name">${l.name}</div><div class="row-sub">ギフト ${counts[l.name]||0}件</div></div>
         <div class="row-actions">
           <button class="btn-sm" onclick="openDetailModal('${l.name}')">詳細</button>
           <button class="btn-sm" onclick="openRenameModal('${l.name}')">名前</button>
