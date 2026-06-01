@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lyra World Say!</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;700;900&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fdf8f3;--surface:#fff9f4;--card:#ffffff;--border:#e8ddd4;--accent:#c9956a;--accent2:#e8b89a;--gold:#c9956a;--text:#5c4a3a;--muted:#a8917e;--glow:rgba(201,149,106,0.12);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Zen Kaku Gothic New',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(255,220,190,0.45) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 80% 80%,rgba(255,200,170,0.3) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.star{position:absolute;width:3px;height:3px;background:#d4a882;border-radius:50%;animation:twinkle var(--d) ease-in-out infinite;opacity:0;}
+#sparkle-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--o)}}
+.container{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:2rem 1.5rem;min-height:100vh;display:flex;flex-direction:column;}
+.header{text-align:center;margin-bottom:2.5rem;animation:fadeDown 0.6s ease both;}
+.header-badge{display:inline-block;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent2);padding:0.3rem 1rem;border-radius:100px;margin-bottom:1rem;background:rgba(201,149,106,0.07);}
+.header h1{font-family:'Shippori Mincho',serif;font-size:1.8rem;font-weight:700;background:linear-gradient(135deg,#b87a50,#d4a882,#c9956a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.3;margin-bottom:0.4rem;}
+.header p{font-size:0.8rem;color:var(--muted);letter-spacing:0.05em;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+.screen{display:none;animation:fadeUp 0.4s ease both;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:1rem;box-shadow:0 2px 16px rgba(180,140,110,0.08);}
+.card-title{font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;}
+.field{margin-bottom:1rem;}
+.field label{display:block;font-size:0.75rem;color:var(--muted);margin-bottom:0.4rem;letter-spacing:0.05em;}
+.field input,.field select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;color:var(--text);font-family:inherit;font-size:0.9rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,149,106,0.1);}
+.field select option{background:var(--card);}
+.btn{width:100%;padding:0.85rem;border:none;border-radius:12px;font-family:inherit;font-size:0.9rem;font-weight:700;letter-spacing:0.05em;cursor:pointer;transition:all 0.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;box-shadow:0 4px 20px rgba(201,149,106,0.3);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(201,149,106,0.4);}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-ghost:disabled{opacity:0.5;cursor:not-allowed;}
+.btn+.btn{margin-top:0.6rem;}
+.tabs{display:flex;background:var(--surface);border-radius:12px;padding:4px;margin-bottom:1.5rem;gap:4px;}
+.tab{flex:1;padding:0.5rem 0.3rem;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:0.68rem;border-radius:9px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.tab.active{background:var(--card);color:var(--accent);font-weight:700;box-shadow:0 1px 6px rgba(180,140,110,0.12);}
+.month-select-wrap{margin-bottom:1.2rem;}
+.gift-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;}
+.gift-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:0.8rem;text-align:center;position:relative;overflow:hidden;transition:all 0.25s;cursor:pointer;}
+.gift-card::before{content:'';position:absolute;inset:0;background:rgba(201,149,106,0.08);opacity:0;transition:opacity 0.25s;}
+.gift-card:hover{border-color:var(--accent2);transform:translateY(-2px);box-shadow:0 4px 16px rgba(201,149,106,0.15);}
+.gift-card:hover::before{opacity:1;}
+.gift-icon{font-size:3.5rem;display:block;margin-bottom:0.5rem;}
+.gift-img{width:100%;aspect-ratio:1;border-radius:12px;object-fit:cover;display:block;border:2px solid var(--border);}
+.btn-download{width:100%;padding:0.45rem;border:1px solid var(--accent);background:rgba(201,149,106,0.1);color:var(--accent);border-radius:8px;font-family:inherit;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.2s;position:relative;z-index:1;margin-top:0.6rem;}
+.btn-download:hover{background:var(--accent);color:white;}
+.row{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0;border-bottom:1px solid var(--border);gap:0.8rem;}
+.row:last-child{border-bottom:none;}
+.row-info{flex:1;min-width:0;}
+.row-name{font-size:0.9rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.row-sub{font-size:0.7rem;color:var(--muted);margin-top:0.15rem;}
+.row-actions{display:flex;gap:0.4rem;flex-shrink:0;}
+.btn-sm{padding:0.3rem 0.7rem;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:7px;font-family:inherit;font-size:0.7rem;cursor:pointer;transition:all 0.15s;}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm.del{border-color:rgba(239,68,68,0.3);color:#f87171;}
+.btn-sm.del:hover{border-color:#f87171;background:rgba(239,68,68,0.1);}
+.alert{padding:0.75rem 1rem;border-radius:10px;font-size:0.82rem;margin-bottom:1rem;display:none;line-height:1.6;}
+.alert.show{display:block;}
+.alert-error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;}
+.alert-success{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:#34d399;}
+.welcome-name{font-family:'Shippori Mincho',serif;font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#b87a50,#d4a882);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.3rem;}
+.welcome-sub{font-size:0.8rem;color:var(--muted);}
+.scroll-area{max-height:360px;overflow-y:auto;}
+.scroll-area::-webkit-scrollbar{width:4px;}
+.scroll-area::-webkit-scrollbar-track{background:transparent;}
+.scroll-area::-webkit-scrollbar-thumb{background:#d4b89a;border-radius:4px;}
+.modal-overlay{position:fixed;inset:0;background:rgba(80,50,30,0.35);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:1.5rem;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.8rem;width:100%;max-width:400px;animation:fadeUp 0.3s ease both;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:1rem;font-weight:700;margin-bottom:1.2rem;color:var(--accent);}
+.empty{text-align:center;padding:2rem 1rem;color:var(--muted);font-size:0.85rem;}
+.empty-icon{font-size:2.5rem;margin-bottom:0.8rem;}
+.top-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.nav-back{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:0.4rem 0.8rem;font-family:inherit;font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+.nav-back:hover{border-color:var(--accent);color:var(--accent);}
+.nav-title{font-size:0.85rem;color:var(--muted);}
+.footer-note{text-align:center;font-size:0.7rem;color:var(--muted);margin-top:auto;padding-top:2rem;opacity:0.6;}
+.rank-chips{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.8rem;}
+.rank-chip{padding:0.3rem 0.7rem;border:1px solid var(--border);border-radius:100px;background:var(--surface);color:var(--muted);font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.rank-chip.selected,.rank-chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(201,149,106,0.1);}
+.gift-entry{display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0;border-bottom:1px solid var(--border);}
+.gift-entry:last-child{border-bottom:none;}
+.gift-entry-thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;}
+.gift-entry-ph{width:40px;height:40px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.gift-entry-info{flex:1;min-width:0;}
+.gift-entry-rank{font-size:0.8rem;font-weight:700;}
+.gift-entry-label{font-size:0.65rem;color:var(--muted);}
+.gift-entry-actions{display:flex;gap:0.3rem;flex-shrink:0;}
+.btn-xs{padding:0.2rem 0.5rem;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:6px;font-family:inherit;font-size:0.65rem;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+.btn-xs:hover{border-color:var(--accent);color:var(--accent);}
+.btn-xs.del{border-color:rgba(239,68,68,0.3);color:#f87171;}
+.btn-xs.del:hover{background:rgba(239,68,68,0.1);}
+.tip-box{background:rgba(201,149,106,0.07);border:1px solid rgba(201,149,106,0.2);border-radius:12px;padding:1rem 1.2rem;font-size:0.8rem;color:#a07050;line-height:1.7;margin-bottom:1rem;}
+.tip-box b{color:#8a5c38;}
+.loading{text-align:center;padding:1.5rem;color:var(--muted);font-size:0.85rem;}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:0.5rem;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.csv-drop{border:2px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:1rem;}
+.csv-drop:hover,.csv-drop.drag{border-color:var(--accent);background:rgba(201,149,106,0.05);}
+.csv-drop-icon{font-size:2rem;margin-bottom:0.5rem;}
+.csv-drop-text{font-size:0.85rem;color:var(--muted);}
+.csv-preview{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem;max-height:200px;overflow-y:auto;}
+.csv-row{display:flex;gap:0.4rem;padding:0.4rem 0;border-bottom:1px solid var(--border);font-size:0.75rem;flex-wrap:wrap;align-items:center;}
+.csv-row:last-child{border-bottom:none;}
+.csv-tag{padding:0.15rem 0.4rem;border-radius:4px;background:rgba(201,149,106,0.12);color:var(--accent);}
+.csv-tag.skip{background:rgba(201,149,106,0.15);color:#c9956a;}
+.csv-tag.err{background:rgba(239,68,68,0.1);color:#f87171;}
+.progress-bar{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:0.5rem;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#c9956a,#e8b89a);border-radius:3px;transition:width 0.3s;}
+.progress-text{font-size:0.78rem;color:var(--muted);text-align:center;}
+.month-section{margin-bottom:1.5rem;}
+.month-header{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.8rem;padding-bottom:0.6rem;border-bottom:1px solid var(--border);}
+.month-title{font-family:'Shippori Mincho',serif;font-size:1rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gift-card.sample-card{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+.gallery-card-wrap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+.gift-card.sample-card::after{content:'SAMPLE';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:1.3rem;font-weight:900;letter-spacing:0.15em;color:rgba(120,60,30,0.55);pointer-events:none;z-index:20;white-space:nowrap;text-shadow:0 1px 3px rgba(255,255,255,0.6);font-size:1.5rem;}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<canvas id="sparkle-canvas"></canvas>
+<div class="container">
+  <div class="header">
+    <div class="header-badge">✦ 歌推しギフト ✦</div>
+    <h1>Lyra World Say!</h1>
+    <p>歌推しランク達成おめでとうございます</p>
+  </div>
+
+  <!-- TOP -->
+  <div class="screen active" id="screen-top">
+    <div class="card">
+      <div class="card-title">✦ ようこそ</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.4rem;line-height:1.7;">ColorSingのアカウント名でログインして、あなたの歌推しギフト画像を受け取れます。</p>
+      <button class="btn btn-primary" onclick="showScreen('screen-login')">リスナーログイン</button>
+      <button class="btn btn-ghost" onclick="showScreen('screen-gallery')">🖼 ギフト画像ギャラリー</button>
+      <button class="btn btn-ghost" onclick="showScreen('screen-admin-login')">リラ専用</button>
+    </div>
+    <p class="footer-note">© Lyra — ColorSing 歌推しギフトシステム</p>
+  </div>
+
+  <!-- LISTENER LOGIN -->
+  <div class="screen" id="screen-login">
+    <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-top')">← 戻る</button><span class="nav-title">リスナーログイン</span></div>
+    <div class="card">
+      <div class="card-title">ログイン</div>
+      <div id="login-alert" class="alert alert-error"></div>
+      <div class="field"><label>ColorSingアカウント名</label><input type="text" id="login-name" placeholder="例: starlight_yuki" autocomplete="off"></div>
+      <div class="field"><label>パスワード</label><input type="password" id="login-pass" placeholder="パスワードを入力"></div>
+      <button class="btn btn-primary" id="login-btn" onclick="doLogin()">ログイン</button>
+    </div>
+    <div class="card">
+      <div class="card-title">初回の方・パスワードを忘れた方</div>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.7;">リラにアカウント登録してもらった後、こちらでパスワードを設定できます。</p>
+      <button class="btn btn-ghost" onclick="showScreen('screen-setup')">パスワードを設定する</button>
+      <button class="btn btn-ghost" style="margin-top:0.6rem;" onclick="showScreen('screen-namelist')">📋 登録名一覧を確認する</button>
+    </div>
+  </div>
+
+  <!-- PASSWORD SETUP -->
+  <div class="screen" id="screen-setup">
+    <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-login')">← 戻る</button><span class="nav-title">パスワード設定</span></div>
+    <div class="card">
+      <div id="setup-alert" class="alert"></div>
+      <div class="field"><label>ColorSingアカウント名</label><input type="text" id="setup-name" placeholder="例: starlight_yuki" autocomplete="off"></div>
+      <div class="field"><label>新しいパスワード（4文字以上）</label><input type="password" id="setup-pass1" placeholder="パスワード"></div>
+      <div class="field"><label>パスワード（確認）</label><input type="password" id="setup-pass2" placeholder="もう一度入力"></div>
+      <button class="btn btn-primary" id="setup-btn" onclick="doSetup()">設定する</button>
+    </div>
+  </div>
+
+  <!-- LISTENER DASHBOARD -->
+  <div class="screen" id="screen-listener">
+    <div class="top-nav"><button class="nav-back" onclick="doLogout()">← ログアウト</button><span class="nav-title">ギフト一覧</span></div>
+    <div class="card" style="margin-bottom:1.2rem;">
+      <div class="welcome-name" id="listener-welcome-name"></div>
+      <div class="welcome-sub" id="listener-welcome-sub"></div>
+    </div>
+    <div id="listener-month-select-wrap" style="display:none;margin-bottom:1.2rem;">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.4rem;letter-spacing:0.05em;">月を選択</div>
+      <select id="listener-month-select" onchange="onListenerMonthChange()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;color:var(--text);font-family:inherit;font-size:0.9rem;outline:none;"></select>
+    </div>
+    <div id="listener-gift-grid" class="gift-grid"></div>
+    <p class="footer-note">画像は個人利用のみ。SNSアイコン等にご利用ください🎵</p>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="screen" id="screen-gallery">
+    <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-top')">← 戻る</button><span class="nav-title">ギフト画像ギャラリー</span></div>
+    <div class="card" style="margin-bottom:1.2rem;">
+      <div style="font-family:'Shippori Mincho',serif;font-size:1.1rem;font-weight:700;color:var(--accent);margin-bottom:0.3rem;">歌推しギフト一覧</div>
+      <div style="font-size:0.8rem;color:var(--muted);">月を選んでギフト画像を確認できます</div>
+    </div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.4rem;letter-spacing:0.05em;">月を選択</div>
+      <select id="gallery-month-select" onchange="onGalleryMonthChange()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;color:var(--text);font-family:inherit;font-size:0.9rem;outline:none;"></select>
+    </div>
+    <div id="gallery-grid" class="gift-grid"></div>
+    <p class="footer-note">© Lyra — 画像の無断転載・使用を禁じます</p>
+  </div>
+
+  <!-- NAME LIST -->
+  <div class="screen" id="screen-namelist">
+    <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-login')">← 戻る</button><span class="nav-title">登録名一覧</span></div>
+    <div class="card" style="margin-bottom:1rem;">
+      <div style="font-size:0.85rem;color:var(--muted);line-height:1.7;">自分の登録名を確認してください。見つからない場合はリラにお問い合わせください😊</div>
+    </div>
+    <div id="namelist-index" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;"></div>
+    <div class="card">
+      <div class="card-title" id="namelist-section-title">登録済みアカウント名</div>
+      <div id="namelist-container"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN -->
+  <div class="screen" id="screen-admin-login">
+    <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-top')">← 戻る</button><span class="nav-title">リラ専用</span></div>
+    <div class="card">
+      <div class="card-title">管理者認証</div>
+      <div id="admin-login-alert" class="alert alert-error"></div>
+      <div class="field"><label>管理パスワード</label><input type="password" id="admin-pass-input" placeholder="パスワードを入力"></div>
+      <button class="btn btn-primary" onclick="doAdminLogin()">ログイン</button>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div class="screen" id="screen-admin">
+    <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-top')">← ログアウト</button><span class="nav-title">管理ダッシュボード</span></div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchAdminTab('list')">リスナー一覧</button>
+      <button class="tab" onclick="switchAdminTab('add')">ギフト追加</button>
+      <button class="tab" onclick="switchAdminTab('csv')">一括登録</button>
+      <button class="tab" onclick="switchAdminTab('gallery')">ギャラリー</button>
+      <button class="tab" onclick="switchAdminTab('months')">月設定</button>
+    </div>
+    <div id="admin-tab-list">
+      <div class="card"><div class="card-title">登録済みリスナー</div><div class="scroll-area" id="admin-listener-list"></div></div>
+      <div class="card">
+        <div class="card-title">既存URL一括変換</div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;">登録済みのGoogle Drive画像URLをすべて表示できる形式に変換します。</p>
+        <div id="migrate-alert" class="alert"></div>
+        <button class="btn btn-ghost" id="migrate-btn" onclick="doMigrateUrls()">🔄 既存URLを一括変換する</button>
+      </div>
+    </div>
+    <div id="admin-tab-add" style="display:none;">
+      <div class="card">
+        <div class="card-title">ギフト追加 / 新規登録</div>
+        <div id="add-alert" class="alert"></div>
+        <div class="field"><label>ColorSingアカウント名</label><input type="text" id="add-name" placeholder="例: starlight_yuki" autocomplete="off"></div>
+        <div class="field"><label>読みがな（50音順用・任意）</label><input type="text" id="add-furigana" placeholder="例: すたーらいとゆき"></div>
+        <div class="field"><label>月</label><select id="add-month" onchange="onMonthChange()"><option value="">月を選択...</option></select></div>
+        <div class="field"><label>ランク</label><div class="rank-chips" id="add-rank-chips"><span style="font-size:0.8rem;color:var(--muted)">先に月を選択してください</span></div><input type="hidden" id="add-rank"></div>
+        <div class="field"><label>画像URL（この人・このランク専用）</label><input type="text" id="add-img-url" placeholder="https://..." onblur="autoConvertUrl('add-img-url')"><div id="add-img-hint" style="font-size:0.72rem;color:#a07050;margin-top:0.3rem;display:none;">✓ Google DriveのURLを自動変換しました</div></div>
+        <button class="btn btn-primary" id="add-btn" onclick="doAddGift()">追加する</button>
+      </div>
+      <div class="tip-box"><b>📎 Google Drive画像URLの変換方法</b><br>① Driveで画像を右クリック →「共有」→「リンクを知っている全員」<br>② 共有リンクをコピー（例: https://drive.google.com/file/d/<b>XXXXXX</b>/view）<br>③ URLを貼ると自動変換されます！</div>
+    </div>
+    <div id="admin-tab-csv" style="display:none;">
+      <div class="card">
+        <div class="card-title">一括登録（CSV）</div>
+        <div class="tip-box" style="margin-bottom:1.2rem;"><b>📋 CSVの形式</b><br>1行目はヘッダー（読み飛ばし）<br>2行目以降：<code style="background:rgba(0,0,0,0.05);padding:0.1rem 0.4rem;border-radius:3px;">アカウント名,月,ランク(数字 or ♡),画像URL</code><br>同じ人・月・ランクがすでに存在する場合はスキップされます。</div>
+        <button class="btn btn-ghost" style="margin-bottom:1rem;" onclick="downloadSampleCsv()">📥 サンプルCSVをダウンロード</button>
+        <div class="csv-drop" id="csv-drop" onclick="document.getElementById('csv-file').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+          <div class="csv-drop-icon">📂</div>
+          <div class="csv-drop-text">CSVファイルをタップして選択<br><span style="font-size:0.72rem;opacity:0.7;">またはドラッグ＆ドロップ</span></div>
+        </div>
+        <input type="file" id="csv-file" accept=".csv" style="display:none" onchange="onCsvFile(event)">
+        <div id="csv-preview-area" style="display:none;">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem;" id="csv-preview-label"></div>
+          <div class="csv-preview" id="csv-preview"></div>
+          <div id="csv-progress" style="display:none;"><div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div><div class="progress-text" id="progress-text"></div></div>
+          <div id="csv-result-alert" class="alert"></div>
+          <button class="btn btn-primary" id="csv-upload-btn" onclick="doCsvUpload()">この内容で一括登録する</button>
+          <button class="btn btn-ghost" style="margin-top:0.5rem;" onclick="resetCsv()">キャンセル</button>
+        </div>
+      </div>
+    </div>
+    <div id="admin-tab-gallery" style="display:none;">
+      <div class="card">
+        <div class="card-title">ギャラリー画像一覧・修正</div>
+        <div class="field"><label>月を選択</label><select id="gallery-admin-month" onchange="loadGalleryAdmin()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;color:var(--text);font-family:inherit;font-size:0.9rem;outline:none;"></select></div>
+        <div id="gallery-admin-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">1件追加</div>
+        <div id="gallery-add-alert" class="alert"></div>
+        <div class="field"><label>月</label><select id="gallery-add-month" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;color:var(--text);font-family:inherit;font-size:0.9rem;outline:none;"></select></div>
+        <div class="field"><label>ランク</label><div class="rank-chips" id="gallery-add-rank-chips"><span style="font-size:0.8rem;color:var(--muted)">先に月を選択してください</span></div><input type="hidden" id="gallery-add-rank"></div>
+        <div class="field"><label>画像URL</label><input type="text" id="gallery-add-url" placeholder="https://..." onblur="autoConvertUrl('gallery-add-url')"><div id="gallery-add-url-hint" style="font-size:0.72rem;color:#a07050;margin-top:0.3rem;display:none;">✓ Google DriveのURLを自動変換しました</div></div>
+        <button class="btn btn-primary" id="gallery-add-btn" onclick="doGalleryAdd()">追加する</button>
+      </div>
+      <div class="card">
+        <div class="card-title">一括登録（CSV）</div>
+        <div class="tip-box" style="margin-bottom:1rem;"><b>📋 形式：</b> 月,ランク(数字 or ♡),画像URL</div>
+        <button class="btn btn-ghost" style="margin-bottom:0.8rem;" onclick="downloadGallerySampleCsv()">📥 サンプルCSVをダウンロード</button>
+        <div class="csv-drop" id="gallery-csv-drop" onclick="document.getElementById('gallery-csv-file').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onGalleryDrop(event)">
+          <div class="csv-drop-icon">📂</div>
+          <div class="csv-drop-text">CSVファイルをタップして選択</div>
+        </div>
+        <input type="file" id="gallery-csv-file" accept=".csv" style="display:none" onchange="onGalleryCsvFile(event)">
+        <div id="gallery-csv-preview-area" style="display:none;">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem;" id="gallery-csv-label"></div>
+          <div class="csv-preview" id="gallery-csv-preview"></div>
+          <div id="gallery-csv-progress" style="display:none;"><div class="progress-bar"><div class="progress-fill" id="gallery-progress-fill" style="width:0%"></div></div><div class="progress-text" id="gallery-progress-text"></div></div>
+          <div id="gallery-csv-alert" class="alert"></div>
+          <button class="btn btn-primary" id="gallery-csv-btn" onclick="doGalleryCsvUpload()">この内容で一括登録する</button>
+          <button class="btn btn-ghost" style="margin-top:0.5rem;" onclick="resetGalleryCsv()">キャンセル</button>
+        </div>
+      </div>
+    </div>
+    <div id="admin-tab-months" style="display:none;">
+      <div class="card"><div class="card-title">登録済みの月</div><div class="scroll-area" id="month-list"></div></div>
+      <div class="card">
+        <div class="card-title">新しい月を追加</div>
+        <div id="month-add-alert" class="alert"></div>
+        <div class="field"><label>年月ラベル（例: 2025年4月）</label><input type="text" id="new-month-label" placeholder="2025年4月"></div>
+        <div class="field"><label>最大K数</label><input type="number" id="new-month-max" placeholder="例: 80" min="1"></div>
+        <button class="btn btn-primary" id="month-add-btn" onclick="doAddMonth()">追加する</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-title" id="detail-modal-title"></div>
+    <div id="detail-gift-list"></div>
+    <button class="btn btn-ghost" style="margin-top:1rem;" onclick="closeModal('detail-modal')">閉じる</button>
+  </div>
+</div>
+
+<!-- EDIT GIFT MODAL -->
+<div class="modal-overlay" id="edit-gift-modal">
+  <div class="modal">
+    <div class="modal-title">画像URLを変更</div>
+    <div id="edit-gift-alert" class="alert"></div>
+    <input type="hidden" id="edit-gift-id">
+    <input type="hidden" id="edit-gift-listener">
+    <div class="field"><label>新しい画像URL</label><input type="text" id="edit-gift-url" placeholder="https://..." onblur="autoConvertUrl('edit-gift-url')"><div id="edit-img-hint" style="font-size:0.72rem;color:#a07050;margin-top:0.3rem;display:none;">✓ Google DriveのURLを自動変換しました</div></div>
+    <button class="btn btn-primary" onclick="doEditGiftUrl()">更新する</button>
+    <button class="btn btn-ghost" style="margin-top:0.5rem;" onclick="closeModal('edit-gift-modal')">キャンセル</button>
+  </div>
+</div>
+
+<!-- RENAME MODAL -->
+<div class="modal-overlay" id="rename-modal">
+  <div class="modal">
+    <div class="modal-title">アカウント名を変更</div>
+    <div id="rename-alert" class="alert"></div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;" id="rename-current-label"></p>
+    <div class="field"><label>新しいアカウント名</label><input type="text" id="rename-new-name" placeholder="新しいアカウント名" autocomplete="off"></div>
+    <button class="btn btn-primary" id="rename-btn" onclick="doRename()">変更する</button>
+    <button class="btn btn-ghost" style="margin-top:0.5rem;" onclick="closeModal('rename-modal')">キャンセル</button>
+  </div>
+</div>
+
+<!-- RESET PW MODAL -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal">
+    <div class="modal-title">パスワードリセット</div>
+    <div id="reset-alert" class="alert"></div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;" id="reset-target-label"></p>
+    <div class="field"><label>新しいパスワード（空欄にするとリセット）</label><input type="text" id="reset-new-pass" placeholder="空欄にすると削除されリスナーが再設定できます"></div>
+    <button class="btn btn-primary" onclick="doResetPw()">更新する</button>
+    <button class="btn btn-ghost" style="margin-top:0.5rem;" onclick="closeModal('reset-modal')">キャンセル</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div');s.className='star';
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--o:${0.2+Math.random()*0.6};animation-delay:${Math.random()*4}s`;
+    c.appendChild(s);
+  }
+})();
+
+// ===== SPARKLES =====
+(function(){
+  const cv=document.getElementById('sparkle-canvas');
+  const ctx=cv.getContext('2d');
+  let sp=[];
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  function r(a,b){return a+Math.random()*(b-a);}
+  function mk(){return{x:r(0,cv.width),y:r(0,cv.height),size:r(1.5,4.5),alpha:0,maxAlpha:r(0.4,0.9),ph:r(0,Math.PI*2),spd:r(0.012,0.038),type:Math.random()>.5?'cross':'dot',col:['#d4a882','#e8c4a0','#f0d8c0','#c89060','#ffffff'][Math.floor(Math.random()*5)]};}
+  function dCross(x,y,s,a,c){ctx.save();ctx.globalAlpha=a;ctx.strokeStyle=c;ctx.lineWidth=0.9;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x-s,y);ctx.lineTo(x+s,y);ctx.moveTo(x,y-s);ctx.lineTo(x,y+s);ctx.stroke();ctx.lineWidth=0.5;ctx.globalAlpha=a*.4;ctx.beginPath();ctx.moveTo(x-s*.65,y-s*.65);ctx.lineTo(x+s*.65,y+s*.65);ctx.moveTo(x+s*.65,y-s*.65);ctx.lineTo(x-s*.65,y+s*.65);ctx.stroke();ctx.restore();}
+  function dDot(x,y,s,a,c){ctx.save();ctx.globalAlpha=a;ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,s*.5,0,Math.PI*2);ctx.fill();ctx.restore();}
+  function anim(){ctx.clearRect(0,0,cv.width,cv.height);sp.forEach(s=>{s.ph+=s.spd;s.alpha=s.maxAlpha*(.5+.5*Math.sin(s.ph));if(s.type==='cross')dCross(s.x,s.y,s.size,s.alpha,s.col);else dDot(s.x,s.y,s.size,s.alpha,s.col);});requestAnimationFrame(anim);}
+  resize();
+  window.addEventListener('resize',()=>{resize();sp=[];for(let i=0;i<50;i++)sp.push(mk());});
+  for(let i=0;i<50;i++)sp.push(mk());
+  anim();
+})();
+
+const SUPABASE_URL='https://gjlbwpcybsrjfgakyobl.supabase.co';
+const SUPABASE_KEY='sb_publishable_xDfLwRwleXJQ5OFNIHmvgg_BSkXOy1K';
+const ADMIN_PASS='Lyra-09210505';
+const BASE_RANKS=[1,5,10,15,20,30];
+const RANK_ICONS={1:'🌸',5:'🌟',10:'💙',15:'💜',20:'🔥',30:'👑',40:'💎',50:'🌈',60:'⚡',70:'🪐',80:'🌌',90:'✨',100:'🏆','-1':'🤍'};
+const RANK_NAMES={1:'シルバースター',5:'エメラルド',10:'サファイア',15:'アメジスト',20:'ゴールデン',30:'クリスタル',40:'ダイヤモンド',50:'レインボー',60:'ライトニング',70:'ギャラクシー',80:'コスモス',90:'スターダスト',100:'レジェンド','-1':'スペシャル'};
+function getIcon(k){if(k===-1||k==='♡')return'🤍';return RANK_ICONS[k]||'🎵';}
+function getName(k){if(k===-1||k==='♡')return'スペシャル';return RANK_NAMES[k]||(k+'k');}
+function buildRanks(maxK){const all=new Set(BASE_RANKS);for(let k=40;k<=maxK;k+=10)all.add(k);const nums=[...all].filter(k=>k<=maxK).sort((a,b)=>a-b);return [...nums,-1];}
+
+function autoConvertUrl(inputId){
+  const input=document.getElementById(inputId);
+  if(!input||!input.value.trim())return;
+  const original=input.value.trim();
+  const converted=convertDriveUrl(original);
+  if(converted!==original){
+    input.value=converted;
+    const hintMap={'add-img-url':'add-img-hint','edit-gift-url':'edit-img-hint','gallery-add-url':'gallery-add-url-hint'};
+    const hintId=hintMap[inputId];
+    const hint=hintId?document.getElementById(hintId):null;
+    if(hint){hint.style.display='block';setTimeout(()=>hint.style.display='none',3000);}
+  }
+}
+
+function convertDriveUrl(url){
+  if(!url)return url;
+  url=url.trim();
+  if(url.includes('lh3.googleusercontent.com'))return url;
+  const m1=url.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
+  if(m1)return `https://lh3.googleusercontent.com/d/${m1[1]}`;
+  const m2=url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if(m2)return `https://lh3.googleusercontent.com/d/${m2[1]}`;
+  const m3=url.match(/[?&]id=([^&]+)/);
+  if(m3&&url.includes('drive.google.com'))return `https://lh3.googleusercontent.com/d/${m3[1]}`;
+  return url;
+}
+
+async function sb(table,method='GET',body=null,query=''){
+  const url=`${SUPABASE_URL}/rest/v1/${table}${query}`;
+  const headers={'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=representation'};
+  const res=await fetch(url,{method,headers,body:body?JSON.stringify(body):null});
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||`HTTP ${res.status}`);}
+  const text=await res.text();return text?JSON.parse(text):null;
+}
+const dbGet=(t,q='')=>sb(t,'GET',null,q);
+const dbPost=(t,b)=>sb(t,'POST',b);
+const dbPatch=(t,b,q)=>sb(t,'PATCH',b,q);
+const dbDel=(t,q)=>sb(t,'DELETE',null,q);
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);el.classList.add('active');
+  el.style.animation='none';el.offsetHeight;el.style.animation='';
+  if(id==='screen-gallery')initGallery();if(id==='screen-namelist')loadNameList();
+}
+function loading(el,msg='読み込み中...'){el.innerHTML=`<div class="loading"><div class="spinner"></div><br>${msg}</div>`;}
+function showAlert(el,msg,success=false){el.textContent=msg;el.className='alert show '+(success?'alert-success':'alert-error');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+// LISTENER
+// 50音グループ定義
+const KANA_GROUPS=[
+  {label:'あ行',chars:'あいうえおアイウエオ'},
+  {label:'か行',chars:'かきくけこがぎぐげごカキクケコガギグゲゴ'},
+  {label:'さ行',chars:'さしすせそざじずぜぞサシスセソザジズゼゾ'},
+  {label:'た行',chars:'たちつてとだぢづでどタチツテトダヂヅデド'},
+  {label:'な行',chars:'なにぬねのナニヌネノ'},
+  {label:'は行',chars:'はひふへほばびぶべぼぱぴぷぺぽハヒフヘホバビブベボパピプペポ'},
+  {label:'ま行',chars:'まみむめもマミムメモ'},
+  {label:'や行',chars:'やゆよやゆよヤユヨ'},
+  {label:'ら行',chars:'らりるれろラリルレロ'},
+  {label:'わ行',chars:'わをんわをんワヲン'},
+  {label:'英数',chars:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'},
+  {label:'その他',chars:''},
+];
+
+function getKanaGroup(name){
+  if(!name)return'その他';
+  const first=name[0];
+  for(const g of KANA_GROUPS){
+    if(g.chars==='')continue;
+    if(g.chars.includes(first))return g.label;
+  }
+  return'その他';
+}
+
+let _allNames=[];
+let _activeGroup='すべて';
+
+async function loadNameList(){
+  const container=document.getElementById('namelist-container');
+  const indexEl=document.getElementById('namelist-index');
+  container.innerHTML='<div class="loading"><div class="spinner"></div><br>読み込み中...</div>';
+  indexEl.innerHTML='';
+  try{
+    const url=`${SUPABASE_URL}/rest/v1/listeners?select=name,furigana`;
+    const res=await fetch(url,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
+    const text=await res.text();
+    if(!res.ok){container.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div>エラー: '+res.status+'</div>';return;}
+    const all=JSON.parse(text);
+    _allNames=(all||[])
+      .filter(l=>l.name!=='__gallery__')
+      .map(l=>({name:l.name,furigana:l.furigana||''}))
+      .sort((a,b)=>{
+        const ka=a.furigana||a.name;
+        const kb=b.furigana||b.name;
+        return ka.localeCompare(kb,'ja');
+      });
+    if(!_allNames.length){container.innerHTML='<div class="empty"><div class="empty-icon">🎵</div>まだ登録されていません</div>';return;}
+
+    // どのグループに名前があるか調べる
+    const usedGroups=new Set(_allNames.map(n=>getKanaGroup(n.furigana||n.name)));
+
+    // インデックスボタン生成
+    const allBtn=document.createElement('button');
+    allBtn.textContent='すべて';
+    allBtn.className='rank-chip selected';
+    allBtn.id='nlbtn-すべて';
+    allBtn.onclick=()=>filterNameList('すべて');
+    indexEl.appendChild(allBtn);
+
+    KANA_GROUPS.forEach(g=>{
+      if(!usedGroups.has(g.label))return;
+      const btn=document.createElement('button');
+      btn.textContent=g.label;
+      btn.className='rank-chip';
+      btn.id='nlbtn-'+g.label;
+      btn.onclick=()=>filterNameList(g.label);
+      indexEl.appendChild(btn);
+    });
+
+    _activeGroup='すべて';
+    renderNameList();
+  }catch(e){
+    container.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div>エラー: '+e.message+'</div>';
+  }
+}
+
+function filterNameList(group){
+  _activeGroup=group;
+  // update button styles
+  document.querySelectorAll('#namelist-index .rank-chip').forEach(b=>{
+    b.classList.toggle('selected', b.id==='nlbtn-'+group);
+  });
+  renderNameList();
+}
+
+function renderNameList(){
+  const container=document.getElementById('namelist-container');
+  const titleEl=document.getElementById('namelist-section-title');
+  const filtered=_activeGroup==='すべて'?_allNames:_allNames.filter(n=>getKanaGroup(n.furigana||n.name)===_activeGroup);
+  titleEl.textContent=_activeGroup==='すべて'?`登録済みアカウント名（${_allNames.length}件）`:`${_activeGroup}（${filtered.length}件）`;
+  if(!filtered.length){container.innerHTML='<div class="empty"><div class="empty-icon">🔍</div>該当なし</div>';return;}
+  const frag=document.createDocumentFragment();
+  filtered.forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.style.cssText='padding:0.65rem 0;font-size:0.9rem;font-weight:700;color:var(--text);'+(i<filtered.length-1?'border-bottom:1px solid var(--border)':'');
+    div.textContent=item.name+(item.furigana?' （'+item.furigana+'）':'');
+    frag.appendChild(div);
+  });
+  container.innerHTML='';
+  container.appendChild(frag);
+}
+
+async function doLogin(){
+  const name=document.getElementById('login-name').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const al=document.getElementById('login-alert');
+  const btn=document.getElementById('login-btn');
+  if(!name||!pass){showAlert(al,'入力してください');return;}
+  btn.disabled=true;btn.textContent='確認中...';
+  try{
+    const rows=await dbGet('listeners',`?name=eq.${encodeURIComponent(name)}`);
+    if(!rows||!rows.length){showAlert(al,'このアカウント名は登録されていません');return;}
+    const pw=await dbGet('passwords',`?name=eq.${encodeURIComponent(name)}`);
+    if(!pw||!pw.length){showAlert(al,'パスワード未設定です。「パスワードを設定する」から設定してください');return;}
+    if(pw[0].password!==pass){showAlert(al,'パスワードが違います');return;}
+    al.classList.remove('show');await showListenerDashboard(name);
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='ログイン';}
+}
+
+async function doSetup(){
+  const name=document.getElementById('setup-name').value.trim();
+  const p1=document.getElementById('setup-pass1').value;
+  const p2=document.getElementById('setup-pass2').value;
+  const al=document.getElementById('setup-alert');
+  const btn=document.getElementById('setup-btn');
+  if(!name){showAlert(al,'アカウント名を入力してください');return;}
+  if(p1.length<4){showAlert(al,'パスワードは4文字以上にしてください');return;}
+  if(p1!==p2){showAlert(al,'パスワードが一致しません');return;}
+  btn.disabled=true;btn.textContent='設定中...';
+  try{
+    const rows=await dbGet('listeners',`?name=eq.${encodeURIComponent(name)}`);
+    if(!rows||!rows.length){showAlert(al,'このアカウント名は登録されていません');return;}
+    const pw=await dbGet('passwords',`?name=eq.${encodeURIComponent(name)}`);
+    if(pw&&pw.length){await dbPatch('passwords',{password:p1},`?name=eq.${encodeURIComponent(name)}`);}
+    else{await dbPost('passwords',{name,password:p1});}
+    showAlert(al,'✓ パスワードを設定しました！ログインしてください',true);
+    setTimeout(()=>showScreen('screen-login'),1500);
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='設定する';}
+}
+
+function doLogout(){showScreen('screen-top');}
+
+async function showListenerDashboard(name){
+  document.getElementById('listener-welcome-name').textContent=name+' さん';
+  document.getElementById('listener-welcome-sub').textContent='読み込み中...';
+  showScreen('screen-listener');
+  const wrap=document.getElementById('listener-month-select-wrap');
+  const sel=document.getElementById('listener-month-select');
+  const grid=document.getElementById('listener-gift-grid');
+  wrap.style.display='none';
+  grid.innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  try{
+    const gifts=await dbGet('gifts',`?listener_name=eq.${encodeURIComponent(name)}&order=rank.asc`);
+    const months=await dbGet('months','?order=id.asc');
+    if(!gifts||!gifts.length){
+      document.getElementById('listener-welcome-sub').textContent='まだギフトはありません';
+      grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🎵</div>まだギフトはありません</div>';
+      return;
+    }
+    const byMonth={};
+    gifts.forEach(g=>{if(!byMonth[g.month_id])byMonth[g.month_id]=[];byMonth[g.month_id].push(g);});
+    const monthIds=Object.keys(byMonth).sort();
+    document.getElementById('listener-welcome-sub').textContent=`${gifts.length}件のギフトがあります ✦`;
+    sel.innerHTML='';
+    monthIds.forEach(mid=>{
+      const mInfo=(months||[]).find(m=>m.id===mid)||{label:mid};
+      const o=document.createElement('option');o.value=mid;o.textContent=mInfo.label;sel.appendChild(o);
+    });
+    wrap.style.display='block';
+    window._listenerGifts=byMonth;
+    window._listenerName=name;
+    window._listenerMonths=months||[];
+    renderListenerMonth(monthIds[0]);
+  }catch(e){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⚠️</div>読み込みエラー: ${e.message}</div>`;
+  }
+}
+
+function onListenerMonthChange(){
+  const mid=document.getElementById('listener-month-select').value;
+  renderListenerMonth(mid);
+}
+
+function renderListenerMonth(mid){
+  const gifts=(window._listenerGifts||{})[mid]||[];
+  const name=window._listenerName||'';
+  const months=window._listenerMonths||[];
+  const mInfo=(months||[]).find(m=>m.id===mid)||{label:mid};
+  const monthLabel=mInfo.label;
+  const grid=document.getElementById('listener-gift-grid');
+  grid.innerHTML='';
+  gifts.forEach(g=>{
+    const card=document.createElement('div');card.className='gift-card';
+    const rankLabel=g.rank===-1?'♡':g.rank+'k';
+    if(g.image_url){
+      const btn=document.createElement('button');btn.className='btn-download';btn.textContent='⬇ ダウンロード';
+      btn.addEventListener('click',()=>downloadGift(g.image_url,name,rankLabel,monthLabel));
+      card.innerHTML=`<img src="${g.image_url}" class="gift-img" onerror="this.style.display='none';this.nextSibling.style.display='block'"><span class="gift-icon" style="display:none">${getIcon(g.rank)}</span><div style="font-size:0.72rem;color:var(--accent);font-weight:700;margin-top:0.4rem;">${rankLabel}</div>`;
+      card.appendChild(btn);
+    }else{
+      card.innerHTML=`<span class="gift-icon">${getIcon(g.rank)}</span><div style="font-size:0.72rem;color:var(--accent);font-weight:700;margin-bottom:0.3rem;">${rankLabel}</div><button class="btn-download" onclick="downloadGift('','${name}','${rankLabel}','')">⬇ ダウンロード</button>`;
+    }
+    grid.appendChild(card);
+  });
+}
+
+function downloadGift(url,name,rank,month){
+  if(!url){alert('画像が設定されていません');return;}
+  const filename=month?`${month}_${rank}.png`:`${rank}_gift.png`;
+  const a=document.createElement('a');a.href=url;a.download=filename;a.target='_blank';a.click();
+}
+
+// ADMIN
+function doAdminLogin(){
+  const pass=document.getElementById('admin-pass-input').value;
+  const al=document.getElementById('admin-login-alert');
+  if(pass!==ADMIN_PASS){showAlert(al,'パスワードが違います');return;}
+  al.classList.remove('show');document.getElementById('admin-pass-input').value='';
+  showScreen('screen-admin');renderAdminList();
+}
+
+function switchAdminTab(tab){
+  const tabs=['list','add','csv','gallery','months'];
+  document.querySelectorAll('.tabs .tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
+  tabs.forEach(t=>document.getElementById('admin-tab-'+t).style.display=t===tab?'block':'none');
+  if(tab==='list')renderAdminList();
+  if(tab==='add')renderAddForm();
+  if(tab==='months')renderMonthList();
+  if(tab==='gallery')initGalleryAdmin();
+}
+
+let selectedRank=null;
+async function renderAddForm(){
+  try{
+    const months=await dbGet('months','?order=id.asc');
+    const sel=document.getElementById('add-month');
+    sel.innerHTML='<option value="">月を選択...</option>';
+    (months||[]).forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.label;sel.appendChild(o);});
+  }catch(e){}
+  document.getElementById('add-rank-chips').innerHTML='<span style="font-size:0.8rem;color:var(--muted)">先に月を選択してください</span>';
+  selectedRank=null;document.getElementById('add-rank').value='';
+}
+
+async function onMonthChange(){
+  const mid=document.getElementById('add-month').value;
+  const chips=document.getElementById('add-rank-chips');
+  if(!mid){chips.innerHTML='<span style="font-size:0.8rem;color:var(--muted)">先に月を選択してください</span>';return;}
+  try{
+    const months=await dbGet('months',`?id=eq.${encodeURIComponent(mid)}`);
+    if(!months||!months.length)return;
+    const ranks=buildRanks(months[0].max_k);chips.innerHTML='';
+    ranks.forEach(k=>{
+      const chip=document.createElement('div');chip.className='rank-chip';chip.dataset.rank=k;
+      chip.textContent=k===-1?'♡':k+'k';
+      chip.onclick=()=>{document.querySelectorAll('#add-rank-chips .rank-chip').forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');selectedRank=k;document.getElementById('add-rank').value=k;};
+      chips.appendChild(chip);
+    });
+    selectedRank=null;document.getElementById('add-rank').value='';
+  }catch(e){}
+}
+
+async function doAddGift(){
+  const name=document.getElementById('add-name').value.trim();
+  const monthId=document.getElementById('add-month').value;
+  const rank=selectedRank;
+  const imgUrl=convertDriveUrl(document.getElementById('add-img-url').value.trim());
+  const al=document.getElementById('add-alert');
+  const btn=document.getElementById('add-btn');
+  if(!name){showAlert(al,'アカウント名を入力してください');return;}
+  if(!monthId){showAlert(al,'月を選択してください');return;}
+  if(rank===null||rank===undefined){showAlert(al,'ランクを選択してください');return;}
+  btn.disabled=true;btn.textContent='追加中...';
+  try{
+    const rows=await dbGet('listeners',`?name=eq.${encodeURIComponent(name)}`);
+    if(!rows||!rows.length)await dbPost('listeners',{name});
+    const dup=await dbGet('gifts',`?listener_name=eq.${encodeURIComponent(name)}&month_id=eq.${encodeURIComponent(monthId)}&rank=eq.${rank===-1?-1:rank}`);
+    if(dup&&dup.length){showAlert(al,'このリスナー・月・ランクはすでに登録済みです');return;}
+    await dbPost('gifts',{listener_name:name,month_id:monthId,rank:rank===-1?-1:Number(rank),image_url:imgUrl||null,added_at:new Date().toLocaleDateString('ja-JP')});
+    const months=await dbGet('months',`?id=eq.${encodeURIComponent(monthId)}`);
+    const mLabel=months&&months.length?months[0].label:monthId;
+    showAlert(al,`✓ ${name} に ${mLabel} / ${rank===-1?'♡':rank+'k'} を追加しました`,true);
+    document.getElementById('add-name').value='';document.getElementById('add-furigana').value='';document.getElementById('add-img-url').value='';
+    selectedRank=null;document.getElementById('add-rank').value='';
+    document.querySelectorAll('#add-rank-chips .rank-chip').forEach(c=>c.classList.remove('selected'));
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='追加する';}
+}
+
+async function doMigrateUrls(){
+  const al=document.getElementById('migrate-alert');
+  const btn=document.getElementById('migrate-btn');
+  btn.disabled=true;btn.textContent='変換中...';
+  try{
+    const gifts=await dbGet('gifts','?select=id,image_url');
+    let converted=0,skipped=0;
+    for(const g of (gifts||[])){
+      if(!g.image_url)continue;
+      const newUrl=convertDriveUrl(g.image_url);
+      if(newUrl!==g.image_url){await dbPatch('gifts',{image_url:newUrl},`?id=eq.${g.id}`);converted++;}
+      else skipped++;
+    }
+    showAlert(al,`✓ ${converted}件変換しました（${skipped}件はそのまま）`,true);
+    renderAdminList();
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='🔄 既存URLを一括変換する';}
+}
+
+async function renderAdminList(){
+  const container=document.getElementById('admin-listener-list');
+  loading(container);
+  try{
+    const listeners=await dbGet('listeners','?order=name.asc&select=name,furigana');
+    if(!listeners||!listeners.length){container.innerHTML='<div class="empty"><div class="empty-icon">🎵</div>まだ登録されていません</div>';return;}
+    const gifts=await dbGet('gifts','?select=listener_name');
+    const counts={};(gifts||[]).forEach(g=>{counts[g.listener_name]=(counts[g.listener_name]||0)+1;});
+    container.innerHTML=listeners.map(l=>`
+      <div class="row">
+        <div class="row-info"><div class="row-name">${l.name}</div><div class="row-sub">ギフト ${counts[l.name]||0}件${l.furigana?' / 読み: '+l.furigana:''}</div></div>
+        <div class="row-actions">
+          <button class="btn-sm" onclick="openDetailModal('${l.name}')">詳細</button>
+          <button class="btn-sm" onclick="openRenameModal('${l.name}')">名前</button>
+          <button class="btn-sm" onclick="openResetModal('${l.name}')">PW</button>
+          <button class="btn-sm del" onclick="deleteListener('${l.name}')">削除</button>
+        </div>
+      </div>`).join('');
+  }catch(e){container.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div>読み込みエラー</div>`;}
+}
+
+async function openDetailModal(name){
+  document.getElementById('detail-modal-title').textContent=name+' のギフト履歴';
+  document.getElementById('detail-modal').classList.add('show');
+  const list=document.getElementById('detail-gift-list');
+  loading(list);
+  try{
+    const gifts=await dbGet('gifts',`?listener_name=eq.${encodeURIComponent(name)}&order=rank.asc`);
+    const months=await dbGet('months','?order=id.asc');
+    if(!gifts||!gifts.length){list.innerHTML='<div class="empty"><div class="empty-icon">🎵</div>ギフトなし</div>';return;}
+    const byMonth={};
+    gifts.forEach(g=>{if(!byMonth[g.month_id])byMonth[g.month_id]=[];byMonth[g.month_id].push(g);});
+    list.innerHTML=Object.keys(byMonth).sort().map(mid=>{
+      const mLabel=((months||[]).find(m=>m.id===mid)||{label:mid}).label;
+      return `<div style="margin-bottom:0.8rem;">
+        <div style="font-size:0.7rem;color:#a07050;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">${mLabel}</div>
+        ${byMonth[mid].map(g=>`
+        <div class="gift-entry">
+          ${g.image_url?`<img src="${g.image_url}" class="gift-entry-thumb" onerror="this.style.display='none'">`:`<div class="gift-entry-ph">${getIcon(g.rank)}</div>`}
+          <div class="gift-entry-info">
+            <div class="gift-entry-rank">${getIcon(g.rank)} ${getName(g.rank)}${g.rank===-1?' (♡)':'（'+g.rank+'k）'}</div>
+            <div class="gift-entry-label">追加日: ${g.added_at||'—'}</div>
+          </div>
+          <div class="gift-entry-actions">
+            <button class="btn-xs edit-gift-btn">URL変更</button>
+            <button class="btn-xs del delete-gift-btn">削除</button>
+          </div>
+        </div>`).join('')}
+      </div>`;
+    }).join('');
+    // attach event listeners
+    list.querySelectorAll('.gift-entry').forEach((entry,i)=>{
+      const g=gifts[i];if(!g)return;
+      entry.querySelector('.edit-gift-btn').addEventListener('click',()=>openEditGiftModal(g.id,name,g.image_url||''));
+      entry.querySelector('.delete-gift-btn').addEventListener('click',()=>deleteGift(g.id,name));
+    });
+  }catch(e){list.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div>読み込みエラー</div>`;}
+}
+
+function openEditGiftModal(id,listenerName,currentUrl){
+  document.getElementById('edit-gift-id').value=id;
+  document.getElementById('edit-gift-listener').value=listenerName;
+  document.getElementById('edit-gift-url').value=currentUrl;
+  document.getElementById('edit-gift-alert').classList.remove('show');
+  document.getElementById('edit-gift-modal').querySelector('.modal-title').textContent='画像URLを変更';
+  document.getElementById('edit-gift-modal').classList.add('show');
+}
+
+async function doEditGiftUrl(){
+  const id=document.getElementById('edit-gift-id').value;
+  const listenerName=document.getElementById('edit-gift-listener').value;
+  const url=convertDriveUrl(document.getElementById('edit-gift-url').value.trim());
+  const al=document.getElementById('edit-gift-alert');
+  try{
+    if(id.startsWith('__gallery__:')){
+      const galleryId=id.replace('__gallery__:','');
+      await dbPatch('gallery',{image_url:url||null},`?id=eq.${galleryId}`);
+    }else{
+      await dbPatch('gifts',{image_url:url||null},`?id=eq.${id}`);
+    }
+    showAlert(al,'✓ 画像URLを更新しました',true);
+    setTimeout(()=>{closeModal('edit-gift-modal');if(listenerName==='__gallery__'){loadGalleryAdmin();}else{openDetailModal(listenerName);}},1000);
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+}
+
+async function deleteGift(id,name){
+  if(!confirm('このギフトを削除しますか？'))return;
+  try{await dbDel('gifts',`?id=eq.${id}`);openDetailModal(name);renderAdminList();}
+  catch(e){alert('削除エラー: '+e.message);}
+}
+
+async function deleteListener(name){
+  if(!confirm(`「${name}」とすべてのギフト・パスワードを削除しますか？`))return;
+  try{await dbDel('listeners',`?name=eq.${encodeURIComponent(name)}`);renderAdminList();}
+  catch(e){alert('削除エラー: '+e.message);}
+}
+
+let renameTarget='';
+function openRenameModal(name){
+  renameTarget=name;
+  document.getElementById('rename-current-label').textContent=`現在のアカウント名: 「${name}」`;
+  document.getElementById('rename-new-name').value='';
+  document.getElementById('rename-alert').classList.remove('show');
+  document.getElementById('rename-modal').classList.add('show');
+}
+async function doRename(){
+  const newName=document.getElementById('rename-new-name').value.trim();
+  const al=document.getElementById('rename-alert');
+  const btn=document.getElementById('rename-btn');
+  if(!newName){showAlert(al,'新しいアカウント名を入力してください');return;}
+  if(newName===renameTarget){showAlert(al,'同じアカウント名です');return;}
+  btn.disabled=true;btn.textContent='変更中...';
+  try{
+    const existing=await dbGet('listeners',`?name=eq.${encodeURIComponent(newName)}`);
+    if(existing&&existing.length){showAlert(al,'そのアカウント名はすでに存在します');return;}
+    await dbPost('listeners',{name:newName});
+    await dbPatch('gifts',{listener_name:newName},`?listener_name=eq.${encodeURIComponent(renameTarget)}`);
+    const pw=await dbGet('passwords',`?name=eq.${encodeURIComponent(renameTarget)}`);
+    if(pw&&pw.length){await dbPost('passwords',{name:newName,password:pw[0].password});await dbDel('passwords',`?name=eq.${encodeURIComponent(renameTarget)}`);}
+    await dbDel('listeners',`?name=eq.${encodeURIComponent(renameTarget)}`);
+    showAlert(al,`✓ 「${renameTarget}」→「${newName}」に変更しました`,true);
+    setTimeout(()=>{closeModal('rename-modal');renderAdminList();},1200);
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='変更する';}
+}
+
+let resetTarget='';
+function openResetModal(name){
+  resetTarget=name;
+  document.getElementById('reset-target-label').textContent=`「${name}」のパスワードをリセットします。空欄にするとリスナーが再設定できます。`;
+  document.getElementById('reset-new-pass').value='';
+  document.getElementById('reset-alert').classList.remove('show');
+  document.getElementById('reset-modal').classList.add('show');
+}
+async function doResetPw(){
+  const newPass=document.getElementById('reset-new-pass').value;
+  const al=document.getElementById('reset-alert');
+  try{
+    if(newPass){
+      if(newPass.length<4){showAlert(al,'4文字以上にしてください');return;}
+      const rows=await dbGet('passwords',`?name=eq.${encodeURIComponent(resetTarget)}`);
+      if(rows&&rows.length){await dbPatch('passwords',{password:newPass},`?name=eq.${encodeURIComponent(resetTarget)}`);}
+      else{await dbPost('passwords',{name:resetTarget,password:newPass});}
+    }else{await dbDel('passwords',`?name=eq.${encodeURIComponent(resetTarget)}`);}
+    showAlert(al,newPass?'✓ パスワードを変更しました':'✓ パスワードを削除しました',true);
+    setTimeout(()=>closeModal('reset-modal'),1500);
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+}
+
+// MONTHS
+async function renderMonthList(){
+  const container=document.getElementById('month-list');loading(container);
+  try{
+    const months=await dbGet('months','?order=id.asc');
+    if(!months||!months.length){container.innerHTML='<div class="empty"><div class="empty-icon">📅</div>月が登録されていません</div>';return;}
+    container.innerHTML=months.map(m=>`
+      <div class="row">
+        <div class="row-info"><div class="row-name">${m.label}</div><div class="row-sub">最大 ${m.max_k}k / ${buildRanks(m.max_k).length}段階</div></div>
+        <div class="row-actions"><button class="btn-sm del" onclick="deleteMonth('${m.id}')">削除</button></div>
+      </div>`).join('');
+  }catch(e){container.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div>読み込みエラー</div>`;}
+}
+
+async function doAddMonth(){
+  const label=document.getElementById('new-month-label').value.trim();
+  const maxK=parseInt(document.getElementById('new-month-max').value);
+  const al=document.getElementById('month-add-alert');
+  const btn=document.getElementById('month-add-btn');
+  if(!label){showAlert(al,'年月を入力してください');return;}
+  if(!maxK||maxK<1){showAlert(al,'最大K数を入力してください');return;}
+  btn.disabled=true;btn.textContent='追加中...';
+  try{
+    await dbPost('months',{id:label,label,max_k:maxK});
+    document.getElementById('new-month-label').value='';document.getElementById('new-month-max').value='';
+    showAlert(al,`✓ ${label}（最大${maxK}k）を追加しました`,true);renderMonthList();
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='追加する';}
+}
+
+async function deleteMonth(id){
+  if(!confirm(`「${id}」の月設定を削除しますか？`))return;
+  try{await dbDel('months',`?id=eq.${encodeURIComponent(id)}`);renderMonthList();}
+  catch(e){alert('削除エラー: '+e.message);}
+}
+
+// CSV
+let csvRows=[];
+function downloadSampleCsv(){
+  const c='アカウント名,月,ランク,画像URL\nstarlight_yuki,2025年6月,5,https://lh3.googleusercontent.com/d/XXXXX\nmoon_hana,2025年6月,1,\nstarlight_yuki,2025年6月,♡,https://lh3.googleusercontent.com/d/YYYYY';
+  const blob=new Blob(['\uFEFF'+c],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gift_sample.csv';a.click();
+}
+function onDragOver(e){e.preventDefault();document.getElementById('csv-drop').classList.add('drag');}
+function onDragLeave(){document.getElementById('csv-drop').classList.remove('drag');}
+function onDrop(e){e.preventDefault();document.getElementById('csv-drop').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)parseCsvFile(f);}
+function onCsvFile(e){const f=e.target.files[0];if(f)parseCsvFile(f);}
+function parseCsvFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result.replace(/^\uFEFF/,'');
+    const lines=text.split(/\r?\n/).filter(l=>l.trim());
+    csvRows=[];
+    const preview=document.getElementById('csv-preview');preview.innerHTML='';
+    let valid=0,errs=0;
+    lines.slice(1).forEach((line,i)=>{
+      const cols=line.split(',');
+      const name=(cols[0]||'').trim();
+      const month=(cols[1]||'').trim();
+      const rankRaw=(cols[2]||'').trim();
+      const rank=rankRaw==='♡'?-1:parseInt(rankRaw);
+      const imgUrl=convertDriveUrl((cols[3]||'').trim());
+      const errors=[];
+      if(!name)errors.push('名前なし');
+      if(!month)errors.push('月なし');
+      if(!rankRaw||(rankRaw!=='♡'&&isNaN(rank)))errors.push('ランク不正');
+      const row=document.createElement('div');row.className='csv-row';
+      if(errors.length){row.innerHTML=`<span class="csv-tag err">行${i+2}: ${errors.join('・')}</span>`;errs++;}
+      else{
+        const rankLabel=rankRaw==='♡'?'♡':rank+'k';
+        row.innerHTML=`<span class="csv-tag">${name}</span><span class="csv-tag">${month}</span><span class="csv-tag">${rankLabel}</span>${imgUrl?'<span class="csv-tag">🖼 URL</span>':'<span style="font-size:0.65rem;color:var(--muted)">画像なし</span>'}`;
+        csvRows.push({name,month,rank:rankRaw==='♡'?-1:rank,imgUrl});valid++;
+      }
+      preview.appendChild(row);
+    });
+    document.getElementById('csv-preview-label').textContent=`${valid}件登録可能${errs?' / '+errs+'件エラー（スキップ）':''}`;
+    document.getElementById('csv-preview-area').style.display='block';
+    document.getElementById('csv-result-alert').classList.remove('show');
+    document.getElementById('csv-progress').style.display='none';
+  };
+  reader.readAsText(file,'UTF-8');
+}
+async function doCsvUpload(){
+  if(!csvRows.length){alert('登録できる行がありません');return;}
+  const btn=document.getElementById('csv-upload-btn');
+  const fill=document.getElementById('progress-fill');
+  const ptxt=document.getElementById('progress-text');
+  const al=document.getElementById('csv-result-alert');
+  btn.disabled=true;document.getElementById('csv-progress').style.display='block';
+  const existingListeners=new Set((await dbGet('listeners','?select=name').catch(()=>[])||[]).map(x=>x.name));
+  const existingGifts=await dbGet('gifts','?select=listener_name,month_id,rank').catch(()=>[])||[];
+  const dupKey=(n,m,r)=>`${n}||${m}||${r}`;
+  const dupSet=new Set(existingGifts.map(g=>dupKey(g.listener_name,g.month_id,g.rank)));
+  let done=0,skipped=0,errors=0;
+  const previewRows=document.getElementById('csv-preview').querySelectorAll('.csv-row');
+  for(let i=0;i<csvRows.length;i++){
+    const row=csvRows[i];
+    const key=dupKey(row.name,row.month,row.rank);
+    if(dupSet.has(key)){
+      skipped++;
+      if(previewRows[i])previewRows[i].innerHTML=`<span class="csv-tag skip">スキップ（重複）</span><span style="font-size:0.75rem;color:var(--muted)">${row.name} / ${row.month} / ${row.rank===-1?'♡':row.rank+'k'}</span>`;
+    }else{
+      try{
+        if(!existingListeners.has(row.name)){await dbPost('listeners',{name:row.name});existingListeners.add(row.name);}
+        await dbPost('gifts',{listener_name:row.name,month_id:row.month,rank:row.rank===-1?-1:Number(row.rank),image_url:row.imgUrl||null,added_at:new Date().toLocaleDateString('ja-JP')});
+        dupSet.add(key);done++;
+      }catch(e){errors++;}
+    }
+    fill.style.width=Math.round(((done+skipped+errors)/csvRows.length)*100)+'%';
+    ptxt.textContent=`${done+skipped+errors} / ${csvRows.length}`;
+  }
+  btn.disabled=false;
+  showAlert(al,`✓ ${done}件登録${skipped?' / '+skipped+'件スキップ':''}${errors?' / '+errors+'件失敗':''}`,errors===0);
+  renderAdminList();
+}
+function resetCsv(){csvRows=[];document.getElementById('csv-preview-area').style.display='none';document.getElementById('csv-file').value='';}
+
+// GALLERY ADMIN
+let gallerySelectedRank=null;
+async function initGalleryAdmin(){
+  const sel=document.getElementById('gallery-admin-month');
+  const addSel=document.getElementById('gallery-add-month');
+  sel.innerHTML='<option value="">読み込み中...</option>';
+  try{
+    const months=await dbGet('months','?order=id.asc');
+    const opts='<option value="">月を選択...</option>'+(months||[]).map(m=>`<option value="${m.id}">${m.label}</option>`).join('');
+    sel.innerHTML=opts;addSel.innerHTML=opts;
+    if(months&&months.length){sel.value=months[0].id;loadGalleryAdmin();}
+    addSel.onchange=onGalleryAddMonthChange;
+  }catch(e){}
+}
+async function loadGalleryAdmin(){
+  const mid=document.getElementById('gallery-admin-month').value;
+  const container=document.getElementById('gallery-admin-list');
+  if(!mid){container.innerHTML='';return;}
+  loading(container);
+  try{
+    const rows=await dbGet('gallery',`?month_id=eq.${encodeURIComponent(mid)}&order=rank.asc`);
+    if(!rows||!rows.length){container.innerHTML='<div class="empty"><div class="empty-icon">🎨</div>この月の登録はありません</div>';return;}
+    const frag=document.createDocumentFragment();
+    rows.forEach(r=>{
+      const div=document.createElement('div');div.className='gift-entry';
+      div.innerHTML=`<img src="${r.image_url}" class="gift-entry-thumb" onerror="this.style.display='none'">
+        <div class="gift-entry-info">
+          <div class="gift-entry-rank">${r.rank===-1?'♡':r.rank+'k'}</div>
+          <div class="gift-entry-label" style="word-break:break-all;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.image_url}</div>
+        </div>
+        <div class="gift-entry-actions">
+          <button class="btn-xs edit-gallery-btn">修正</button>
+          <button class="btn-xs del delete-gallery-btn">削除</button>
+        </div>`;
+      div.querySelector('.edit-gallery-btn').addEventListener('click',()=>openGalleryEditModal(r.id,r.rank===-1?'♡':r.rank+'k',r.image_url||''));
+      div.querySelector('.delete-gallery-btn').addEventListener('click',()=>deleteGalleryItem(r.id));
+      frag.appendChild(div);
+    });
+    container.innerHTML='';container.appendChild(frag);
+  }catch(e){container.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div>エラー: ${e.message}</div>`;}
+}
+async function onGalleryAddMonthChange(){
+  const mid=document.getElementById('gallery-add-month').value;
+  const chips=document.getElementById('gallery-add-rank-chips');
+  if(!mid){chips.innerHTML='<span style="font-size:0.8rem;color:var(--muted)">先に月を選択してください</span>';return;}
+  try{
+    const months=await dbGet('months',`?id=eq.${encodeURIComponent(mid)}`);
+    if(!months||!months.length)return;
+    const ranks=buildRanks(months[0].max_k);chips.innerHTML='';
+    ranks.forEach(k=>{
+      const chip=document.createElement('div');chip.className='rank-chip';chip.dataset.rank=k;
+      chip.textContent=k===-1?'♡':k+'k';
+      chip.onclick=()=>{document.querySelectorAll('#gallery-add-rank-chips .rank-chip').forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');gallerySelectedRank=k;document.getElementById('gallery-add-rank').value=k;};
+      chips.appendChild(chip);
+    });
+    gallerySelectedRank=null;document.getElementById('gallery-add-rank').value='';
+  }catch(e){}
+}
+async function doGalleryAdd(){
+  const monthId=document.getElementById('gallery-add-month').value;
+  const rank=gallerySelectedRank;
+  const imgUrl=convertDriveUrl(document.getElementById('gallery-add-url').value.trim());
+  const al=document.getElementById('gallery-add-alert');
+  const btn=document.getElementById('gallery-add-btn');
+  if(!monthId){showAlert(al,'月を選択してください');return;}
+  if(rank===null||rank===undefined){showAlert(al,'ランクを選択してください');return;}
+  if(!imgUrl){showAlert(al,'画像URLを入力してください');return;}
+  btn.disabled=true;btn.textContent='追加中...';
+  try{
+    await dbPost('gallery',{month_id:monthId,rank:rank===-1?-1:Number(rank),image_url:imgUrl});
+    showAlert(al,'✓ 追加しました',true);
+    document.getElementById('gallery-add-url').value='';
+    gallerySelectedRank=null;document.getElementById('gallery-add-rank').value='';
+    document.querySelectorAll('#gallery-add-rank-chips .rank-chip').forEach(c=>c.classList.remove('selected'));
+    if(document.getElementById('gallery-admin-month').value===monthId)loadGalleryAdmin();
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='追加する';}
+}
+function openGalleryEditModal(id,rankLabel,currentUrl){
+  document.getElementById('edit-gift-id').value='__gallery__:'+id;
+  document.getElementById('edit-gift-listener').value='__gallery__';
+  document.getElementById('edit-gift-url').value=currentUrl;
+  document.getElementById('edit-gift-alert').classList.remove('show');
+  document.getElementById('edit-gift-modal').querySelector('.modal-title').textContent=rankLabel+' の画像を修正';
+  document.getElementById('edit-gift-modal').classList.add('show');
+}
+async function deleteGalleryItem(id){
+  if(!confirm('このギャラリー画像を削除しますか？'))return;
+  try{await dbDel('gallery',`?id=eq.${id}`);loadGalleryAdmin();}
+  catch(e){alert('削除エラー: '+e.message);}
+}
+let galleryCsvRows=[];
+function downloadGallerySampleCsv(){
+  const c='月,ランク,画像URL\n2025年6月,1,https://lh3.googleusercontent.com/d/XXXXX\n2025年6月,5,https://lh3.googleusercontent.com/d/YYYYY\n2025年6月,♡,https://lh3.googleusercontent.com/d/ZZZZZ';
+  const blob=new Blob(['\uFEFF'+c],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gallery_sample.csv';a.click();
+}
+function onGalleryDrop(e){e.preventDefault();document.getElementById('gallery-csv-drop').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)parseGalleryCsv(f);}
+function onGalleryCsvFile(e){const f=e.target.files[0];if(f)parseGalleryCsv(f);}
+function parseGalleryCsv(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result.replace(/^\uFEFF/,'');
+    const lines=text.split(/\r?\n/).filter(l=>l.trim());
+    galleryCsvRows=[];
+    const preview=document.getElementById('gallery-csv-preview');preview.innerHTML='';
+    let valid=0,errs=0;
+    lines.slice(1).forEach((line,i)=>{
+      const cols=line.split(',');
+      const month=(cols[0]||'').trim();
+      const rankRaw=(cols[1]||'').trim();
+      const imgUrl=convertDriveUrl((cols[2]||'').trim());
+      const rank=rankRaw==='♡'?-1:parseInt(rankRaw);
+      const errors=[];
+      if(!month)errors.push('月なし');
+      if(!rankRaw||(rankRaw!=='♡'&&isNaN(rank)))errors.push('ランク不正');
+      if(!imgUrl)errors.push('URL必須');
+      const row=document.createElement('div');row.className='csv-row';
+      if(errors.length){row.innerHTML=`<span class="csv-tag err">行${i+2}: ${errors.join('・')}</span>`;errs++;}
+      else{
+        row.innerHTML=`<span class="csv-tag">${month}</span><span class="csv-tag">${rankRaw==='♡'?'♡':rank+'k'}</span><span class="csv-tag">🖼 URL</span>`;
+        galleryCsvRows.push({month,rank,imgUrl});valid++;
+      }
+      preview.appendChild(row);
+    });
+    document.getElementById('gallery-csv-label').textContent=`${valid}件登録可能${errs?' / '+errs+'件エラー':''}`;
+    document.getElementById('gallery-csv-preview-area').style.display='block';
+    document.getElementById('gallery-csv-alert').classList.remove('show');
+    document.getElementById('gallery-csv-progress').style.display='none';
+  };
+  reader.readAsText(file,'UTF-8');
+}
+async function doGalleryCsvUpload(){
+  if(!galleryCsvRows.length){alert('登録できる行がありません');return;}
+  const btn=document.getElementById('gallery-csv-btn');
+  const fill=document.getElementById('gallery-progress-fill');
+  const ptxt=document.getElementById('gallery-progress-text');
+  const al=document.getElementById('gallery-csv-alert');
+  btn.disabled=true;document.getElementById('gallery-csv-progress').style.display='block';
+  let done=0,errors=0;
+  for(let i=0;i<galleryCsvRows.length;i++){
+    const row=galleryCsvRows[i];
+    try{await dbPost('gallery',{month_id:row.month,rank:row.rank,image_url:row.imgUrl});done++;}
+    catch(e){errors++;}
+    fill.style.width=Math.round(((done+errors)/galleryCsvRows.length)*100)+'%';
+    ptxt.textContent=`${done+errors} / ${galleryCsvRows.length}`;
+  }
+  btn.disabled=false;
+  showAlert(al,`✓ ${done}件登録しました${errors?' / '+errors+'件失敗':''}`,errors===0);
+  loadGalleryAdmin();
+}
+function resetGalleryCsv(){galleryCsvRows=[];document.getElementById('gallery-csv-preview-area').style.display='none';document.getElementById('gallery-csv-file').value='';}
+
+// GALLERY PUBLIC
+async function initGallery(){
+  const sel=document.getElementById('gallery-month-select');
+  const grid=document.getElementById('gallery-grid');
+  sel.innerHTML='<option value="">読み込み中...</option>';
+  grid.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
+  try{
+    const months=await dbGet('months','?order=id.asc');
+    sel.innerHTML='<option value="">月を選択...</option>';
+    (months||[]).forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.label;sel.appendChild(o);});
+    if(months&&months.length){sel.value=months[0].id;await loadGalleryMonth(months[0].id);}
+    else{grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🎨</div>月が登録されていません</div>';}
+  }catch(e){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⚠️</div>読み込みエラー: ${e.message}</div>`;}
+}
+async function onGalleryMonthChange(){
+  const mid=document.getElementById('gallery-month-select').value;
+  if(!mid)return;
+  await loadGalleryMonth(mid);
+}
+async function loadGalleryMonth(mid){
+  const grid=document.getElementById('gallery-grid');
+  grid.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
+  try{
+    const rows=await dbGet('gallery',`?month_id=eq.${encodeURIComponent(mid)}&order=rank.asc`);
+    if(!rows||!rows.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🎨</div>この月の画像はまだありません</div>';return;}
+    grid.innerHTML='';
+    rows.forEach(r=>{
+      const card=document.createElement('div');
+      card.className='gift-card sample-card gallery-card-wrap';
+      card.innerHTML=`<img src="${r.image_url}" class="gift-img" onerror="this.style.display='none'" oncontextmenu="return false" ondragstart="return false">
+        <div style="font-size:0.72rem;color:var(--accent);font-weight:700;margin-top:0.4rem;">${r.rank===-1?'♡':r.rank+'k'}</div>`;
+      grid.appendChild(card);
+    });
+  }catch(e){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⚠️</div>読み込みエラー: ${e.message}</div>`;}
+}
+</script>
+</body>
+</html>
