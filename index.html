@@ -132,7 +132,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <h1>Lyra World Say!</h1>
     <p>歌推しランク達成おめでとうございます</p>
   </div>
-
+ 
   <!-- TOP -->
   <div class="screen active" id="screen-top">
     <div class="card">
@@ -144,7 +144,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
     <p class="footer-note">© Lyra — ColorSing 歌推しギフトシステム</p>
   </div>
-
+ 
   <!-- LISTENER LOGIN -->
   <div class="screen" id="screen-login">
     <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-top')">← 戻る</button><span class="nav-title">リスナーログイン</span></div>
@@ -162,7 +162,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <button class="btn btn-ghost" style="margin-top:0.6rem;" onclick="showScreen('screen-namelist')">📋 登録名一覧を確認する</button>
     </div>
   </div>
-
+ 
   <!-- PASSWORD SETUP -->
   <div class="screen" id="screen-setup">
     <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-login')">← 戻る</button><span class="nav-title">パスワード設定</span></div>
@@ -174,7 +174,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <button class="btn btn-primary" id="setup-btn" onclick="doSetup()">設定する</button>
     </div>
   </div>
-
+ 
   <!-- LISTENER DASHBOARD -->
   <div class="screen" id="screen-listener">
     <div class="top-nav"><button class="nav-back" onclick="doLogout()">← ログアウト</button><span class="nav-title">ギフト一覧</span></div>
@@ -189,7 +189,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="listener-gift-grid" class="gift-grid"></div>
     <p class="footer-note">画像は個人利用のみ。SNSアイコン等にご利用ください🎵</p>
   </div>
-
+ 
   <!-- GALLERY -->
   <div class="screen" id="screen-gallery">
     <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-top')">← 戻る</button><span class="nav-title">ギフト画像ギャラリー</span></div>
@@ -204,7 +204,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="gallery-grid" class="gift-grid"></div>
     <p class="footer-note">© Lyra — 画像の無断転載・使用を禁じます</p>
   </div>
-
+ 
   <!-- NAME LIST -->
   <div class="screen" id="screen-namelist">
     <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-login')">← 戻る</button><span class="nav-title">登録名一覧</span></div>
@@ -217,7 +217,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div id="namelist-container"><div class="loading"><div class="spinner"></div></div></div>
     </div>
   </div>
-
+ 
   <!-- ADMIN LOGIN -->
   <div class="screen" id="screen-admin-login">
     <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-top')">← 戻る</button><span class="nav-title">リラ専用</span></div>
@@ -228,7 +228,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <button class="btn btn-primary" onclick="doAdminLogin()">ログイン</button>
     </div>
   </div>
-
+ 
   <!-- ADMIN DASHBOARD -->
   <div class="screen" id="screen-admin">
     <div class="top-nav"><button class="nav-back" onclick="showScreen('screen-top')">← ログアウト</button><span class="nav-title">管理ダッシュボード</span></div>
@@ -253,7 +253,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <div class="card-title">ギフト追加 / 新規登録</div>
         <div id="add-alert" class="alert"></div>
         <div class="field"><label>ColorSingアカウント名</label><input type="text" id="add-name" placeholder="例: starlight_yuki" autocomplete="off"></div>
-        <div class="field"><label>読みがな（50音順用・任意）</label><input type="text" id="add-furigana" placeholder="例: すたーらいとゆき"></div>
+ 
         <div class="field"><label>月</label><select id="add-month" onchange="onMonthChange()"><option value="">月を選択...</option></select></div>
         <div class="field"><label>ランク</label><div class="rank-chips" id="add-rank-chips"><span style="font-size:0.8rem;color:var(--muted)">先に月を選択してください</span></div><input type="hidden" id="add-rank"></div>
         <div class="field"><label>画像URL（この人・このランク専用）</label><input type="text" id="add-img-url" placeholder="https://..." onblur="autoConvertUrl('add-img-url')"><div id="add-img-hint" style="font-size:0.72rem;color:#a07050;margin-top:0.3rem;display:none;">✓ Google DriveのURLを自動変換しました</div></div>
@@ -326,7 +326,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 </div>
-
+ 
 <!-- DETAIL MODAL -->
 <div class="modal-overlay" id="detail-modal">
   <div class="modal">
@@ -335,7 +335,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <button class="btn btn-ghost" style="margin-top:1rem;" onclick="closeModal('detail-modal')">閉じる</button>
   </div>
 </div>
-
+ 
 <!-- EDIT GIFT MODAL -->
 <div class="modal-overlay" id="edit-gift-modal">
   <div class="modal">
@@ -348,7 +348,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <button class="btn btn-ghost" style="margin-top:0.5rem;" onclick="closeModal('edit-gift-modal')">キャンセル</button>
   </div>
 </div>
-
+ 
 <!-- RENAME MODAL -->
 <div class="modal-overlay" id="rename-modal">
   <div class="modal">
@@ -360,7 +360,22 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <button class="btn btn-ghost" style="margin-top:0.5rem;" onclick="closeModal('rename-modal')">キャンセル</button>
   </div>
 </div>
-
+ 
+<!-- FURIGANA MODAL -->
+<div class="modal-overlay" id="furigana-modal">
+  <div class="modal">
+    <div class="modal-title">読みがなを編集</div>
+    <div id="furigana-alert" class="alert"></div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;" id="furigana-target-label"></p>
+    <div class="field">
+      <label>読みがな（ひらがな）</label>
+      <input type="text" id="furigana-input" placeholder="例: すたーらいとゆき">
+    </div>
+    <button class="btn btn-primary" onclick="doSaveFurigana()">保存する</button>
+    <button class="btn btn-ghost" style="margin-top:0.5rem;" onclick="closeModal('furigana-modal')">キャンセル</button>
+  </div>
+</div>
+ 
 <!-- RESET PW MODAL -->
 <div class="modal-overlay" id="reset-modal">
   <div class="modal">
@@ -372,7 +387,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <button class="btn btn-ghost" style="margin-top:0.5rem;" onclick="closeModal('reset-modal')">キャンセル</button>
   </div>
 </div>
-
+ 
 <script>
 (function(){
   const c=document.getElementById('stars');
@@ -382,7 +397,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     c.appendChild(s);
   }
 })();
-
+ 
 // ===== SPARKLES =====
 (function(){
   const cv=document.getElementById('sparkle-canvas');
@@ -399,7 +414,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   for(let i=0;i<50;i++)sp.push(mk());
   anim();
 })();
-
+ 
 const SUPABASE_URL='https://gjlbwpcybsrjfgakyobl.supabase.co';
 const SUPABASE_KEY='sb_publishable_xDfLwRwleXJQ5OFNIHmvgg_BSkXOy1K';
 const ADMIN_PASS='Lyra-09210505';
@@ -409,7 +424,7 @@ const RANK_NAMES={1:'シルバースター',5:'エメラルド',10:'サファイ
 function getIcon(k){if(k===-1||k==='♡')return'🤍';return RANK_ICONS[k]||'🎵';}
 function getName(k){if(k===-1||k==='♡')return'スペシャル';return RANK_NAMES[k]||(k+'k');}
 function buildRanks(maxK){const all=new Set(BASE_RANKS);for(let k=40;k<=maxK;k+=10)all.add(k);const nums=[...all].filter(k=>k<=maxK).sort((a,b)=>a-b);return [...nums,-1];}
-
+ 
 function autoConvertUrl(inputId){
   const input=document.getElementById(inputId);
   if(!input||!input.value.trim())return;
@@ -423,7 +438,7 @@ function autoConvertUrl(inputId){
     if(hint){hint.style.display='block';setTimeout(()=>hint.style.display='none',3000);}
   }
 }
-
+ 
 function convertDriveUrl(url){
   if(!url)return url;
   url=url.trim();
@@ -436,7 +451,7 @@ function convertDriveUrl(url){
   if(m3&&url.includes('drive.google.com'))return `https://lh3.googleusercontent.com/d/${m3[1]}`;
   return url;
 }
-
+ 
 async function sb(table,method='GET',body=null,query=''){
   const url=`${SUPABASE_URL}/rest/v1/${table}${query}`;
   const headers={'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=representation'};
@@ -448,7 +463,7 @@ const dbGet=(t,q='')=>sb(t,'GET',null,q);
 const dbPost=(t,b)=>sb(t,'POST',b);
 const dbPatch=(t,b,q)=>sb(t,'PATCH',b,q);
 const dbDel=(t,q)=>sb(t,'DELETE',null,q);
-
+ 
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const el=document.getElementById(id);el.classList.add('active');
@@ -458,7 +473,7 @@ function showScreen(id){
 function loading(el,msg='読み込み中...'){el.innerHTML=`<div class="loading"><div class="spinner"></div><br>${msg}</div>`;}
 function showAlert(el,msg,success=false){el.textContent=msg;el.className='alert show '+(success?'alert-success':'alert-error');}
 function closeModal(id){document.getElementById(id).classList.remove('show');}
-
+ 
 // LISTENER
 // 50音グループ定義
 const KANA_GROUPS=[
@@ -472,10 +487,8 @@ const KANA_GROUPS=[
   {label:'や行',chars:'やゆよやゆよヤユヨ'},
   {label:'ら行',chars:'らりるれろラリルレロ'},
   {label:'わ行',chars:'わをんわをんワヲン'},
-  {label:'英数',chars:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'},
-  {label:'その他',chars:''},
 ];
-
+ 
 function getKanaGroup(name){
   if(!name)return'その他';
   const first=name[0];
@@ -485,10 +498,10 @@ function getKanaGroup(name){
   }
   return'その他';
 }
-
+ 
 let _allNames=[];
 let _activeGroup='すべて';
-
+ 
 async function loadNameList(){
   const container=document.getElementById('namelist-container');
   const indexEl=document.getElementById('namelist-index');
@@ -509,10 +522,10 @@ async function loadNameList(){
         return ka.localeCompare(kb,'ja');
       });
     if(!_allNames.length){container.innerHTML='<div class="empty"><div class="empty-icon">🎵</div>まだ登録されていません</div>';return;}
-
+ 
     // どのグループに名前があるか調べる
     const usedGroups=new Set(_allNames.map(n=>getKanaGroup(n.furigana||n.name)));
-
+ 
     // インデックスボタン生成
     const allBtn=document.createElement('button');
     allBtn.textContent='すべて';
@@ -520,7 +533,7 @@ async function loadNameList(){
     allBtn.id='nlbtn-すべて';
     allBtn.onclick=()=>filterNameList('すべて');
     indexEl.appendChild(allBtn);
-
+ 
     KANA_GROUPS.forEach(g=>{
       if(!usedGroups.has(g.label))return;
       const btn=document.createElement('button');
@@ -530,14 +543,14 @@ async function loadNameList(){
       btn.onclick=()=>filterNameList(g.label);
       indexEl.appendChild(btn);
     });
-
+ 
     _activeGroup='すべて';
     renderNameList();
   }catch(e){
     container.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div>エラー: '+e.message+'</div>';
   }
 }
-
+ 
 function filterNameList(group){
   _activeGroup=group;
   // update button styles
@@ -546,7 +559,7 @@ function filterNameList(group){
   });
   renderNameList();
 }
-
+ 
 function renderNameList(){
   const container=document.getElementById('namelist-container');
   const titleEl=document.getElementById('namelist-section-title');
@@ -563,7 +576,7 @@ function renderNameList(){
   container.innerHTML='';
   container.appendChild(frag);
 }
-
+ 
 async function doLogin(){
   const name=document.getElementById('login-name').value.trim();
   const pass=document.getElementById('login-pass').value;
@@ -581,7 +594,7 @@ async function doLogin(){
   }catch(e){showAlert(al,'エラー: '+e.message);}
   finally{btn.disabled=false;btn.textContent='ログイン';}
 }
-
+ 
 async function doSetup(){
   const name=document.getElementById('setup-name').value.trim();
   const p1=document.getElementById('setup-pass1').value;
@@ -603,9 +616,9 @@ async function doSetup(){
   }catch(e){showAlert(al,'エラー: '+e.message);}
   finally{btn.disabled=false;btn.textContent='設定する';}
 }
-
+ 
 function doLogout(){showScreen('screen-top');}
-
+ 
 async function showListenerDashboard(name){
   document.getElementById('listener-welcome-name').textContent=name+' さん';
   document.getElementById('listener-welcome-sub').textContent='読み込み中...';
@@ -641,12 +654,12 @@ async function showListenerDashboard(name){
     grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⚠️</div>読み込みエラー: ${e.message}</div>`;
   }
 }
-
+ 
 function onListenerMonthChange(){
   const mid=document.getElementById('listener-month-select').value;
   renderListenerMonth(mid);
 }
-
+ 
 function renderListenerMonth(mid){
   const gifts=(window._listenerGifts||{})[mid]||[];
   const name=window._listenerName||'';
@@ -669,13 +682,13 @@ function renderListenerMonth(mid){
     grid.appendChild(card);
   });
 }
-
+ 
 function downloadGift(url,name,rank,month){
   if(!url){alert('画像が設定されていません');return;}
   const filename=month?`${month}_${rank}.png`:`${rank}_gift.png`;
   const a=document.createElement('a');a.href=url;a.download=filename;a.target='_blank';a.click();
 }
-
+ 
 // ADMIN
 function doAdminLogin(){
   const pass=document.getElementById('admin-pass-input').value;
@@ -684,7 +697,7 @@ function doAdminLogin(){
   al.classList.remove('show');document.getElementById('admin-pass-input').value='';
   showScreen('screen-admin');renderAdminList();
 }
-
+ 
 function switchAdminTab(tab){
   const tabs=['list','add','csv','gallery','months'];
   document.querySelectorAll('.tabs .tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
@@ -694,7 +707,7 @@ function switchAdminTab(tab){
   if(tab==='months')renderMonthList();
   if(tab==='gallery')initGalleryAdmin();
 }
-
+ 
 let selectedRank=null;
 async function renderAddForm(){
   try{
@@ -706,7 +719,7 @@ async function renderAddForm(){
   document.getElementById('add-rank-chips').innerHTML='<span style="font-size:0.8rem;color:var(--muted)">先に月を選択してください</span>';
   selectedRank=null;document.getElementById('add-rank').value='';
 }
-
+ 
 async function onMonthChange(){
   const mid=document.getElementById('add-month').value;
   const chips=document.getElementById('add-rank-chips');
@@ -724,7 +737,7 @@ async function onMonthChange(){
     selectedRank=null;document.getElementById('add-rank').value='';
   }catch(e){}
 }
-
+ 
 async function doAddGift(){
   const name=document.getElementById('add-name').value.trim();
   const monthId=document.getElementById('add-month').value;
@@ -745,13 +758,13 @@ async function doAddGift(){
     const months=await dbGet('months',`?id=eq.${encodeURIComponent(monthId)}`);
     const mLabel=months&&months.length?months[0].label:monthId;
     showAlert(al,`✓ ${name} に ${mLabel} / ${rank===-1?'♡':rank+'k'} を追加しました`,true);
-    document.getElementById('add-name').value='';document.getElementById('add-furigana').value='';document.getElementById('add-img-url').value='';
+    document.getElementById('add-name').value='';document.getElementById('add-img-url').value='';
     selectedRank=null;document.getElementById('add-rank').value='';
     document.querySelectorAll('#add-rank-chips .rank-chip').forEach(c=>c.classList.remove('selected'));
   }catch(e){showAlert(al,'エラー: '+e.message);}
   finally{btn.disabled=false;btn.textContent='追加する';}
 }
-
+ 
 async function doMigrateUrls(){
   const al=document.getElementById('migrate-alert');
   const btn=document.getElementById('migrate-btn');
@@ -770,7 +783,7 @@ async function doMigrateUrls(){
   }catch(e){showAlert(al,'エラー: '+e.message);}
   finally{btn.disabled=false;btn.textContent='🔄 既存URLを一括変換する';}
 }
-
+ 
 async function renderAdminList(){
   const container=document.getElementById('admin-listener-list');
   loading(container);
@@ -785,13 +798,14 @@ async function renderAdminList(){
         <div class="row-actions">
           <button class="btn-sm" onclick="openDetailModal('${l.name}')">詳細</button>
           <button class="btn-sm" onclick="openRenameModal('${l.name}')">名前</button>
+          <button class="btn-sm" onclick="openFuriganaModal('${l.name}','${(l.furigana||'')}')">読み</button>
           <button class="btn-sm" onclick="openResetModal('${l.name}')">PW</button>
           <button class="btn-sm del" onclick="deleteListener('${l.name}')">削除</button>
         </div>
       </div>`).join('');
   }catch(e){container.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div>読み込みエラー</div>`;}
 }
-
+ 
 async function openDetailModal(name){
   document.getElementById('detail-modal-title').textContent=name+' のギフト履歴';
   document.getElementById('detail-modal').classList.add('show');
@@ -829,7 +843,7 @@ async function openDetailModal(name){
     });
   }catch(e){list.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div>読み込みエラー</div>`;}
 }
-
+ 
 function openEditGiftModal(id,listenerName,currentUrl){
   document.getElementById('edit-gift-id').value=id;
   document.getElementById('edit-gift-listener').value=listenerName;
@@ -838,7 +852,7 @@ function openEditGiftModal(id,listenerName,currentUrl){
   document.getElementById('edit-gift-modal').querySelector('.modal-title').textContent='画像URLを変更';
   document.getElementById('edit-gift-modal').classList.add('show');
 }
-
+ 
 async function doEditGiftUrl(){
   const id=document.getElementById('edit-gift-id').value;
   const listenerName=document.getElementById('edit-gift-listener').value;
@@ -855,19 +869,19 @@ async function doEditGiftUrl(){
     setTimeout(()=>{closeModal('edit-gift-modal');if(listenerName==='__gallery__'){loadGalleryAdmin();}else{openDetailModal(listenerName);}},1000);
   }catch(e){showAlert(al,'エラー: '+e.message);}
 }
-
+ 
 async function deleteGift(id,name){
   if(!confirm('このギフトを削除しますか？'))return;
   try{await dbDel('gifts',`?id=eq.${id}`);openDetailModal(name);renderAdminList();}
   catch(e){alert('削除エラー: '+e.message);}
 }
-
+ 
 async function deleteListener(name){
   if(!confirm(`「${name}」とすべてのギフト・パスワードを削除しますか？`))return;
   try{await dbDel('listeners',`?name=eq.${encodeURIComponent(name)}`);renderAdminList();}
   catch(e){alert('削除エラー: '+e.message);}
 }
-
+ 
 let renameTarget='';
 function openRenameModal(name){
   renameTarget=name;
@@ -896,7 +910,25 @@ async function doRename(){
   }catch(e){showAlert(al,'エラー: '+e.message);}
   finally{btn.disabled=false;btn.textContent='変更する';}
 }
-
+ 
+let furiganaTarget='';
+function openFuriganaModal(name,currentFurigana){
+  furiganaTarget=name;
+  document.getElementById('furigana-target-label').textContent='「'+name+'」の読みがなを設定します。';
+  document.getElementById('furigana-input').value=currentFurigana||'';
+  document.getElementById('furigana-alert').classList.remove('show');
+  document.getElementById('furigana-modal').classList.add('show');
+}
+async function doSaveFurigana(){
+  const furigana=document.getElementById('furigana-input').value.trim();
+  const al=document.getElementById('furigana-alert');
+  try{
+    await dbPatch('listeners',{furigana:furigana||null},`?name=eq.${encodeURIComponent(furiganaTarget)}`);
+    showAlert(al,'✓ 読みがなを保存しました',true);
+    setTimeout(()=>{closeModal('furigana-modal');renderAdminList();},1000);
+  }catch(e){showAlert(al,'エラー: '+e.message);}
+}
+ 
 let resetTarget='';
 function openResetModal(name){
   resetTarget=name;
@@ -919,7 +951,7 @@ async function doResetPw(){
     setTimeout(()=>closeModal('reset-modal'),1500);
   }catch(e){showAlert(al,'エラー: '+e.message);}
 }
-
+ 
 // MONTHS
 async function renderMonthList(){
   const container=document.getElementById('month-list');loading(container);
@@ -933,7 +965,7 @@ async function renderMonthList(){
       </div>`).join('');
   }catch(e){container.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div>読み込みエラー</div>`;}
 }
-
+ 
 async function doAddMonth(){
   const label=document.getElementById('new-month-label').value.trim();
   const maxK=parseInt(document.getElementById('new-month-max').value);
@@ -949,13 +981,13 @@ async function doAddMonth(){
   }catch(e){showAlert(al,'エラー: '+e.message);}
   finally{btn.disabled=false;btn.textContent='追加する';}
 }
-
+ 
 async function deleteMonth(id){
   if(!confirm(`「${id}」の月設定を削除しますか？`))return;
   try{await dbDel('months',`?id=eq.${encodeURIComponent(id)}`);renderMonthList();}
   catch(e){alert('削除エラー: '+e.message);}
 }
-
+ 
 // CSV
 let csvRows=[];
 function downloadSampleCsv(){
@@ -1036,7 +1068,7 @@ async function doCsvUpload(){
   renderAdminList();
 }
 function resetCsv(){csvRows=[];document.getElementById('csv-preview-area').style.display='none';document.getElementById('csv-file').value='';}
-
+ 
 // GALLERY ADMIN
 let gallerySelectedRank=null;
 async function initGalleryAdmin(){
@@ -1189,7 +1221,7 @@ async function doGalleryCsvUpload(){
   loadGalleryAdmin();
 }
 function resetGalleryCsv(){galleryCsvRows=[];document.getElementById('gallery-csv-preview-area').style.display='none';document.getElementById('gallery-csv-file').value='';}
-
+ 
 // GALLERY PUBLIC
 async function initGallery(){
   const sel=document.getElementById('gallery-month-select');
