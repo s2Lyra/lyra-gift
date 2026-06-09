@@ -818,8 +818,10 @@ async function doAddGift(){
   try{
     const rows=await dbGet('listeners',`?name=eq.${encodeURIComponent(name)}`);
     if(!rows||!rows.length)await dbPost('listeners',{name});
-    const dup=await dbGet('gifts',`?listener_name=eq.${encodeURIComponent(name)}&month_id=eq.${encodeURIComponent(monthId)}&rank=eq.${rank===-1?-1:rank}`);
-    if(dup&&dup.length){showAlert(al,'このリスナー・月・ランクはすでに登録済みです');return;}
+    if(rank!==-1){
+      const dup=await dbGet('gifts',`?listener_name=eq.${encodeURIComponent(name)}&month_id=eq.${encodeURIComponent(monthId)}&rank=eq.${rank}`);
+      if(dup&&dup.length){showAlert(al,'このリスナー・月・ランクはすでに登録済みです');return;}
+    }
     await dbPost('gifts',{listener_name:name,month_id:monthId,rank:rank===-1?-1:Number(rank),image_url:imgUrl||null,added_at:new Date().toLocaleDateString('ja-JP')});
     const months=await dbGet('months',`?id=eq.${encodeURIComponent(monthId)}`);
     const mLabel=months&&months.length?months[0].label:monthId;
@@ -1116,7 +1118,7 @@ async function doCsvUpload(){
   for(let i=0;i<csvRows.length;i++){
     const row=csvRows[i];
     const key=dupKey(row.name,row.month,row.rank);
-    if(dupSet.has(key)){
+    if(row.rank!==-1&&dupSet.has(key)){
       skipped++;
       if(previewRows[i])previewRows[i].innerHTML=`<span class="csv-tag skip">スキップ（重複）</span><span style="font-size:0.75rem;color:var(--muted)">${row.name} / ${row.month} / ${row.rank===-1?'♡':row.rank+'k'}</span>`;
     }else{
