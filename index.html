@@ -922,11 +922,11 @@ async function openDetailModal(name){
           :`<span class="gift-icon">${getIcon(g.rank)}</span>`;
         card.innerHTML=`${imgHtml}<div style="font-size:0.72rem;color:var(--accent);font-weight:700;margin-top:0.4rem;">${rankLabel}</div>`;
         // edit/delete buttons
-        const actions=document.createElement('div');actions.style.cssText='display:flex;gap:0.3rem;margin-top:0.4rem;';
+        const actions=document.createElement('div');actions.style.cssText='display:flex;gap:0.3rem;margin-top:0.4rem;position:relative;z-index:10;';
         const editBtn=document.createElement('button');editBtn.className='btn-xs';editBtn.textContent='URL変更';editBtn.style.flex='1';
-        editBtn.addEventListener('click',()=>openEditGiftModal(g.id,name,g.image_url||''));
+        editBtn.addEventListener('click',(e)=>{e.stopPropagation();openEditGiftModal(g.id,name,g.image_url||'');});
         const delBtn=document.createElement('button');delBtn.className='btn-xs del';delBtn.textContent='削除';delBtn.style.flex='1';
-        delBtn.addEventListener('click',()=>deleteGift(g.id,name));
+        delBtn.addEventListener('click',(e)=>{e.stopPropagation();deleteGift(g.id,name);});
         actions.appendChild(editBtn);actions.appendChild(delBtn);
         card.appendChild(actions);
         grid.appendChild(card);
